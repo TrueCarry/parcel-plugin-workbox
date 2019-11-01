@@ -2,7 +2,7 @@ const { generateSWString } = require('workbox-build')
 const { readFile, writeFileSync } = require('fs')
 const logger = require('@parcel/logger')
 const path = require('path')
-const uglifyJS = require('uglify-js')
+const uglifyJS = require('uglify-es')
 
 module.exports = bundle => {
   bundle.on('buildEnd', async () => {
@@ -61,13 +61,20 @@ module.exports = bundle => {
       if (pkg.workbox.pathOut) pathOut = pkg.workbox.pathOut
     }
     const dest = path.resolve(pathOut)
+    const uglifyCode = code => {
+      const uglified = uglifyJS.minify(code)
+      if (uglified.error) {
+        throw Error(uglified.error)
+      }
+      return uglified.code
+    }
 
     logger.log('🛠️  Workbox')
     config.importScripts.forEach(s => {
       readFile(path.resolve(s), (err, data) => {
         if (err) throw err
         if (bundle.options.minify) {
-          data = uglifyJS.minify(data).code
+          data = uglifyCode(data)
         }
         const impDest = path.resolve(pathOut, /[^\\/]+$/.exec(s)[0])
         writeFileSync(impDest, data)
