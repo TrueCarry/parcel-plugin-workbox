@@ -16,7 +16,7 @@ module.exports = bundle => {
       globDirectory: bundle.options.outDir,
       // file types to include
       globPatterns: [
-        '**\\/*.{css,html,js,gif,ico,jpg,png,svg,webp,woff,woff2,ttf,otf}'
+        '**/*.{css,html,js,gif,ico,jpg,png,svg,webp,woff,woff2,ttf,otf}'
       ]
     }
 
@@ -76,14 +76,14 @@ module.exports = bundle => {
         if (bundle.options.minify) {
           data = uglifyCode(data)
         }
-        const impDest = path.resolve(pathOut, /[^\\/]+$/.exec(s)[0])
+        const impDest = path.resolve(pathOut, /[^/]+$/.exec(s)[0])
         writeFileSync(impDest, data)
         logger.success(`Imported ${s} to ${impDest}`)
       })
     })
 
     config.importScripts = config.importScripts.map(s => {
-      return /[^\\/]+$/.exec(s)[0]
+      return /[^/]+$/.exec(s)[0]
     })
     config.importScripts.push(
       'https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js'
